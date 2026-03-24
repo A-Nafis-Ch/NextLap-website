@@ -1,7 +1,7 @@
 import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 
-export default function Navbar({ userToken, onLoginSuccess, cartCount }) {
+export default function Navbar({ userToken, onLoginSuccess, onLogout, cartCount }) {
   return (
     <nav className="bg-red-500 border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
       <div className="flex items-center gap-2">
@@ -25,7 +25,7 @@ export default function Navbar({ userToken, onLoginSuccess, cartCount }) {
             onError={() => console.log('Login Failed')}
           />
         ) : (
-          <button className="text-sm font-semibold text-white-500 hover:text-black-900">
+          <button onClick={onLogout} className="text-sm font-semibold text-white-500 hover:text-white-900">
             Logout
           </button>
         )}

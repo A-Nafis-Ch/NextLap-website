@@ -11,7 +11,7 @@ export default function LaptopCard({ laptop }) {
       <p className="text-gray-600 font-bold">৳{laptop.price}</p>
       <button 
         onClick={() => addToCart(laptop)}
-        className="bg-red-500 text-white px-4 py-2 mt-2 rounded hover:bg-blue-700"
+        className="bg-red-500 text-white px-4 py-2 mt-2 rounded hover:bg-red-700"
       >
         Add to Cart
       </button>

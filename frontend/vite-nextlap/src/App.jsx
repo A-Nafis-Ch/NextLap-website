@@ -26,6 +26,8 @@ const handleLoginSuccess = async (googleResponse) => {
       }
     );
 
+
+
     const token = res.data.key;
     localStorage.setItem("token", token);
     setUserToken(token);
@@ -35,6 +37,13 @@ const handleLoginSuccess = async (googleResponse) => {
     console.error("Login Error:", err.response?.data);
   }
 };
+
+    const handleLogout = () => {
+    localStorage.removeItem('token'); // Clear from browser storage
+    setUserToken(null);               // Clear React state (triggers UI update)
+    setCart([]);                      // Optional: Clear cart on logout
+    alert("Logged out successfully!");
+  };
 
   // 3. Add to Cart Logic
   const handleAddToCart = async (laptop) => {
@@ -61,7 +70,8 @@ const handleLoginSuccess = async (googleResponse) => {
       <div className="min-h-screen bg-gray-50">
       <Navbar 
         userToken={userToken} 
-        onLoginSuccess={handleLoginSuccess} // Fixed name
+        onLoginSuccess={handleLoginSuccess}
+        onLogout={handleLogout} // Fixed name
         cartCount={cart.length} 
       />
       
