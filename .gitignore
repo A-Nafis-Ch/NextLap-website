@@ -1,0 +1,15 @@
+# Secrets
+.env
+credential.txt
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+dist/
+
+# Misc
+.DS_Store
