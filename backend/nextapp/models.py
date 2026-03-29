@@ -12,6 +12,10 @@ class Laptop(models.Model):
     def __str__(self):
         return self.name
 
+class LaptopImage(models.Model):
+    laptop = models.ForeignKey(Laptop, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='laptop_gallery/')        
+
 class CartItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Laptop, on_delete=models.CASCADE)
