@@ -46,10 +46,10 @@ NextLap follows a **decoupled (headless) architecture**:
 
 ## 📸 Templates Screenshots
 
-### 🏠 Home Page
+### Desktop View
 ![Desktop View](Template/T1.png)
 
-### 📦 Product Page
+### Mobile View
 ![Mobile View](Template/T2.png)
 
 ## 🛠️ Tech Stack
