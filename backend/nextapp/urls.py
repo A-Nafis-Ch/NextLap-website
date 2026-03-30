@@ -1,13 +1,16 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import LaptopViewSet, CartViewSet
+from .views import ProductViewSet, CartViewSet, google_login
 
+# Using a Router for the REST API
 router = DefaultRouter()
-router.register(r'laptops', LaptopViewSet)
+router.register(r'products', ProductViewSet, basename='product')
 router.register(r'cart', CartViewSet, basename='cart')
 
 urlpatterns = [
-    path('', include(router.urls)), # Remove 'api/' from here
-    path('auth/', include('dj_rest_auth.urls')),
-    path('auth/registration/', include('dj_rest_auth.registration.urls')),
+    # This will result in: /api/products/ and /api/cart/
+    path('', include(router.urls)),
+    
+    # This will result in: /api/google-login/
+    path('google-login/', google_login, name='google_login'),
 ]

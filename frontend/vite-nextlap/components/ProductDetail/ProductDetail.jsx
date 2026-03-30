@@ -6,32 +6,32 @@ function ProductDetail({ userToken, onAdd }) {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  const [laptop, setLaptop] = useState(null);
+  const [product, setProduct] = useState(null);
   const [activeImg, setActiveImg] = useState(""); // This tracks the big photo
 
   useEffect(() => {
     if (!userToken) {
-      alert("This is a premium gallery. Please login to view laptop details!");
+      alert("This is a premium gallery. Please login to view product details!");
       navigate("/");
       return;
     }
 
     axios
-      .get(`http://127.0.0.1:8000/api/laptops/${id}/`)
+      .get(`http://127.0.0.1:8000/api/products/${id}/`)
       .then((res) => {
-        setLaptop(res.data);
-        // Set the initial big image to the main laptop image
+        setProduct(res.data);
+        // Set the initial big image to the main product image
         setActiveImg(res.data.image);
       })
-      .catch((err) => console.error("Error fetching laptop details", err));
+      .catch((err) => console.error("Error fetching product details", err));
   }, [id, userToken, navigate]);
 
   if (!userToken) return null;
-  if (!laptop) return <div className="text-center py-20 text-gray-500">Loading...</div>;
+  if (!product) return <div className="text-center py-20 text-gray-500">Loading...</div>;
 
   // Combine the main image and extra images into one list for the gallery
   // We check for 'images' which is the related_name we set in Django
-  const allPhotos = [laptop.image, ...(laptop.images?.map(imgObj => imgObj.image) || [])];
+  const allPhotos = [product.image, ...(product.images?.map(imgObj => imgObj.image) || [])];
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
@@ -43,7 +43,7 @@ function ProductDetail({ userToken, onAdd }) {
           <div className="w-full aspect-[4/3] bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100 flex items-center justify-center p-8">
             <img 
               src={activeImg} 
-              alt={laptop.name} 
+              alt={product.name} 
               className="max-w-full max-h-full object-contain transition-all duration-500 transform hover:scale-105"
             />
           </div>
@@ -68,12 +68,12 @@ function ProductDetail({ userToken, onAdd }) {
 
         {/* RIGHT: Product Info Section */}
         <div className="flex flex-col h-full justify-center">
-          <span className="text-red-600 font-bold uppercase tracking-widest text-sm mb-2">{laptop.brand}</span>
-          <h1 className="text-5xl font-black text-gray-900 leading-tight mb-4">{laptop.name}</h1>
+          <span className="text-red-600 font-bold uppercase tracking-widest text-sm mb-2">{product.brand}</span>
+          <h1 className="text-5xl font-black text-gray-900 leading-tight mb-4">{product.name}</h1>
           
           <div className="flex items-center gap-4 mb-8">
-            <p className="text-4xl font-bold text-gray-900">BDT {laptop.price}</p>
-            {laptop.stock > 0 ? (
+            <p className="text-4xl font-bold text-gray-900">BDT {product.price}</p>
+            {product.stock > 0 ? (
               <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase">In Stock</span>
             ) : (
               <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold uppercase">Out of Stock</span>
@@ -83,15 +83,15 @@ function ProductDetail({ userToken, onAdd }) {
           <div className="prose prose-slate mb-10">
             <h3 className="text-lg font-bold text-gray-800 mb-2">Description</h3>
             <p className="text-gray-600 leading-relaxed text-lg">
-              {laptop.description}
+              {product.description}
             </p>
           </div>
 
           <button 
-            onClick={() => onAdd(laptop)}
-            disabled={laptop.stock <= 0}
+            onClick={() => onAdd(product)}
+            disabled={product.stock <= 0}
             className={`w-full py-5 rounded-2xl font-black text-xl transition-all shadow-xl flex items-center justify-center gap-3 ${
-              laptop.stock > 0 
+              product.stock > 0 
               ? "bg-red-600 text-white hover:bg-red-700 active:scale-95" 
               : "bg-gray-200 text-gray-400 cursor-not-allowed"
             }`}
@@ -99,7 +99,7 @@ function ProductDetail({ userToken, onAdd }) {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            {laptop.stock > 0 ? "ADD TO CART" : "OUT OF STOCK"}
+            {product.stock > 0 ? "ADD TO CART" : "OUT OF STOCK"}
           </button>
         </div>
 

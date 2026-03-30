@@ -21,7 +21,7 @@ function App() {
   // 1. Fetch Laptops from Django
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/laptops/")
+      .get("http://127.0.0.1:8000/api/products/")
       .then((res) => setLaptops(res.data))
       .catch((err) => console.error("Check if Django is running!", err));
   }, []);
@@ -38,7 +38,7 @@ function App() {
       };
 
       // 2. Send the token to Django to authenticate the session
-      const res = await axios.post("http://127.0.0.1:8000/api/auth/google/", {
+      const res = await axios.post("http://127.0.0.1:8000/api/google-login/", {
         access_token: googleResponse.credential,
       });
 
@@ -99,7 +99,7 @@ function App() {
         />
 
         <header className="max-w-7xl mx-auto px-6 py-12">
-          <h2 className="text-4xl font-bold text-gray-900">Premium Laptops</h2>
+          <h2 className="text-4xl font-bold text-gray-900">Premium Laptops & Accessories</h2>
           <p className="text-gray-500 mt-2 text-lg">
             Curated performance for your next project.
           </p>

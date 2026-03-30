@@ -1,6 +1,8 @@
 from rest_framework import viewsets, permissions
-from .models import Laptop, CartItem
-from .serializers import LaptopSerializer, CartItemSerializer
+# 1. Updated Imports: Changed Laptop to Product
+from .models import Product, CartItem 
+from .serializers import ProductSerializer, CartItemSerializer 
+
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from django.conf import settings
@@ -8,7 +10,6 @@ from django.contrib.auth.models import User
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-
 
 @api_view(["POST"])
 def google_login(request):
@@ -24,6 +25,7 @@ def google_login(request):
         email = idinfo["email"]
         name = idinfo.get("name", "")
 
+        # Use email as username for consistency
         user, created = User.objects.get_or_create(
             username=email,
             defaults={"email": email, "first_name": name}
@@ -34,16 +36,18 @@ def google_login(request):
         return Response({
             "key": token.key,
             "email": email,
-            "name": name
+            "name": name,
+            "picture": idinfo.get("picture", "") # Added this to help with your profile pic issue
         })
 
     except ValueError:
         return Response({"error": "Invalid Google token"}, status=400)
 
-class LaptopViewSet(viewsets.ReadOnlyModelViewSet):
-    """Anyone can view laptops, but only admins can edit (via Admin Portal)"""
-    queryset = Laptop.objects.all()
-    serializer_class = LaptopSerializer
+# 2. Updated ViewSet: Changed name to ProductViewSet
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+    """Anyone can view products (laptops, accessories, etc.), but only admins edit."""
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
 class CartViewSet(viewsets.ModelViewSet):
     """Users can only see and manage their own cart items"""
