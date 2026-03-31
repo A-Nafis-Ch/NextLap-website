@@ -1,21 +1,11 @@
+# admin.py
 from django.contrib import admin
-from .models import Category, Product, ProductImage # Import the new names
+from .models import Product, ProductImage
 
-# Register the Category model
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug')
-    prepopulated_fields = {'slug': ('name',)} # Automatically generates slug from name
-
-# Inline for Product Gallery
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
-    extra = 5
+    extra = 5  # This shows 5 empty slots by default!
 
-# Register the Product model
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class LaptopAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline]
-    list_display = ('name', 'category', 'brand', 'price', 'stock')
-    list_filter = ('category', 'brand') # Adds a filter sidebar on the right
-    search_fields = ('name', 'brand')
