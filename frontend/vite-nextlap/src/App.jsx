@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import axios from "axios";
 
@@ -12,12 +12,21 @@ import Footer from "../components/Footer/Footer";
 import { jwtDecode } from "jwt-decode";
 
 function App() {
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const [laptops, setLaptops] = useState([]);
   const [cart, setCart] = useState([]);
   const [userToken, setUserToken] = useState(localStorage.getItem("token"));
-  const [userInfo, setUserInfo] = useState(JSON.parse(localStorage.getItem('userInfo')) || null);
+  const [userInfo, setUserInfo] = useState(
+    JSON.parse(localStorage.getItem("userInfo")) || null,
+  );
 
+  // Filter the products based on the search query
+  const filteredProducts = laptops.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.brand.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
   // 1. Fetch Laptops from Django
   useEffect(() => {
     axios
@@ -61,7 +70,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem("token"); // Clear from browser storage
-    localStorage.removeItem('userInfo'); // Clear from browser storage
+    localStorage.removeItem("userInfo"); // Clear from browser storage
     setUserToken(null); // Clear React state (triggers UI update)
     setUserInfo(null);
     setCart([]); // Optional: Clear cart on logout
@@ -92,6 +101,7 @@ function App() {
     <>
       <div className="min-h-screen bg-gray-50">
         <Navbar
+          setSearchQuery={setSearchQuery} // Pass the setter to Navbar
           userToken={userToken}
           onLoginSuccess={handleLoginSuccess}
           onLogout={handleLogout} // Fixed name
@@ -99,7 +109,9 @@ function App() {
         />
 
         <header className="max-w-7xl mx-auto px-6 py-12">
-          <h2 className="text-4xl font-bold text-gray-900">Premium Laptops & Accessories</h2>
+          <h2 className="text-4xl font-bold text-gray-900">
+            Premium Laptops & Accessories
+          </h2>
           <p className="text-gray-500 mt-2 text-lg">
             Curated performance for your next project.
           </p>
@@ -113,7 +125,7 @@ function App() {
               element={
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {laptops.length > 0 ? (
-                    laptops.map((laptop) => (
+                    filteredProducts.map((laptop) => (
                       <LaptopCard
                         key={laptop.id}
                         laptop={laptop}
@@ -133,7 +145,7 @@ function App() {
             <Route
               path="/laptop/:id"
               element={
-                <ProductDetail onAdd={handleAddToCart} userToken={userToken}/>
+                <ProductDetail onAdd={handleAddToCart} userToken={userToken} />
               }
             />
             <Route path="/profile" element={<Profile userInfo={userInfo} />} />
