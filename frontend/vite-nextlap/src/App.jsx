@@ -4,12 +4,15 @@ import { Routes, Route } from "react-router-dom";
 import axios from "axios";
 
 import Navbar from "../components/Navbar/Navbar";
-import LaptopCard from "../components/LaptopCard/LaptopCard"; // Fixed path
+import LaptopCard from "../components/LaptopCard/LaptopCard"; 
 import ProductDetail from "../components/ProductDetail/ProductDetail";
 import Profile from "../components/Profile/Profile";
 import Footer from "../components/Footer/Footer";
 
 import { jwtDecode } from "jwt-decode";
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,12 +30,16 @@ function App() {
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.brand.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
   // 1. Fetch Laptops from Django
   useEffect(() => {
     axios
       .get("http://127.0.0.1:8000/api/products/")
       .then((res) => setLaptops(res.data))
-      .catch((err) => console.error("Check if Django is running!", err));
+      .catch((err) => {
+        console.error("Check if Django is running!", err);
+        toast.error("🔌 Connection error: Unable to reach the server.");
+      });
   }, []);
 
   // 2. Handle Google Login Success
@@ -48,6 +55,7 @@ function App() {
 
       // 2. Send the token to Django to authenticate the session
       const res = await axios.post("http://127.0.0.1:8000/api/google-login/", {
+        token: googleResponse.credential,
         access_token: googleResponse.credential,
       });
 
@@ -60,27 +68,37 @@ function App() {
       setUserToken(token);
       setUserInfo(userData);
 
-      alert(`Welcome back, ${userData.name}!`);
+      // 🎉 Success Toast
+      toast.success(`⚡ Welcome back, ${userData.name}! Login successful.`, {
+        position: "top-right",
+        autoClose: 3000,
+      });
     } catch (err) {
-      // Check specifically for Django response errors or general network errors
       console.error("Login Error:", err.response?.data || err.message);
-      alert("Login failed. Please try again.");
+      toast.error("❌ Login failed. Please try again.");
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Clear from browser storage
-    localStorage.removeItem("userInfo"); // Clear from browser storage
-    setUserToken(null); // Clear React state (triggers UI update)
+    localStorage.removeItem("token"); 
+    localStorage.removeItem("userInfo"); 
+    setUserToken(null); 
     setUserInfo(null);
-    setCart([]); // Optional: Clear cart on logout
-    alert("Logged out successfully!");
+    setCart([]); 
+
+    // 🚪 Info Toast
+    toast.info("Logged out successfully. See you next time!", {
+      position: "top-right",
+      autoClose: 2500,
+    });
   };
 
   // 3. Add to Cart Logic
   const handleAddToCart = async (laptop) => {
     if (!userToken) {
-      alert("Please login first to add items to your cart!");
+      toast.warn("🔒 Please login first to add items to your cart!", {
+        position: "top-center",
+      });
       return;
     }
 
@@ -91,9 +109,15 @@ function App() {
         { headers: { Authorization: `Token ${userToken}` } },
       );
       setCart([...cart, laptop]);
-      alert(`${laptop.name} added to cart!`);
+
+      // 🛒 Cart Added Toast
+      toast.success(`🛒 ${laptop.name} added to cart!`, {
+        position: "bottom-right",
+        autoClose: 2000,
+      });
     } catch (err) {
       console.error("Cart Error:", err);
+      toast.error("Failed to add item to your cart.");
     }
   };
 
@@ -101,10 +125,11 @@ function App() {
     <>
       <div className="min-h-screen bg-gray-50">
         <Navbar
-          setSearchQuery={setSearchQuery} // Pass the setter to Navbar
+          setSearchQuery={setSearchQuery} 
           userToken={userToken}
+          userInfo={userInfo}
           onLoginSuccess={handleLoginSuccess}
-          onLogout={handleLogout} // Fixed name
+          onLogout={handleLogout} 
           cartCount={cart.length}
         />
 
@@ -122,7 +147,7 @@ function App() {
             {/* ROUTE 1: The Grid View (Home) */}
             <Route
               path="/"
-              element={
+              element = {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {laptops.length > 0 ? (
                     filteredProducts.map((laptop) => (
@@ -144,7 +169,7 @@ function App() {
             {/* ROUTE 2: The Detail View */}
             <Route
               path="/laptop/:id"
-              element={
+              element = {
                 <ProductDetail onAdd={handleAddToCart} userToken={userToken} />
               }
             />
@@ -153,6 +178,20 @@ function App() {
         </main>
         <Footer />
       </div>
+
+      {/* 🔔 GLOBAL TOAST CONTAINER */}
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </>
   );
 }
